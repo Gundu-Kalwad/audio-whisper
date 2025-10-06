@@ -1,0 +1,30 @@
+name: Test Whisper Transcription
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # allows manual run
+
+jobs:
+  whisper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install ffmpeg -y
+          pip install -e .  # installs whisper from your cloned repo
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Run Whisper on test audio
+        run: |
+          whisper audio.mp3 --model base
